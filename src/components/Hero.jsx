@@ -5,49 +5,55 @@ const banners = [
     id: 1,
     title: 'Stranger Things',
     description: 'Di kota kecil Hawkins tahun 1980-an, sekelompok anak menghadapi kekuatan supernatural dan eksperimen pemerintah rahasia saat mencari teman mereka yang hilang di dunia paralel.',
-    bgImage: 'https://image.tmdb.org/t/p/original/49WJfeN0moxb9IPfGn8AIqMGskD.jpg',
+    bgImage: 'https://c4.wallpaperflare.com/wallpaper/192/803/717/stranger-things-netflix-tv-series-fan-art-wallpaper-preview.jpg',
     ageRating: '13+',
     isSeries: true,
+    objectPosition: 'center 20%',
   },
   {
     id: 2,
     title: 'The Batman',
     description: 'Di tahun kedua memerangi kejahatan, Batman mengungkap korupsi di Gotham City yang terkait dengan keluarganya sendiri saat berhadapan dengan pembunuh berantai Riddler.',
-    bgImage: 'https://image.tmdb.org/t/p/original/74xTEgt7R36Fpooo50r9T25onhq.jpg',
+    bgImage: 'https://w0.peakpx.com/wallpaper/307/244/HD-wallpaper-batman-the-batman.jpg',
     ageRating: '17+',
     isSeries: false,
+    objectPosition: 'center 30%',
   },
   {
-  id: 3,
-  title: 'All of Us Are Dead',
-  description: 'Sebuah SMA menjadi tempat wabah zombie dimulai. Para siswa yang terperangkap harus berjuang untuk keluar hidup-hidup atau berubah menjadi salah satu dari mereka yang terinfeksi. Perjuangan yang mendebarkan untuk bertahan hidup di tengah kepungan mayat hidup.',
-  bgImage: 'https://image.tmdb.org/t/p/original/rGxdrXVOjMuFtgpczaKcU2AkYb1.jpg',
-  ageRating: '17+',
-  isSeries: true,
-},
+    id: 3,
+    title: 'All of Us Are Dead',
+    description: 'Sebuah SMA menjadi tempat wabah zombie dimulai. Para siswa yang terperangkap harus berjuang untuk keluar hidup-hidup atau berubah menjadi salah satu dari mereka yang terinfeksi.',
+    bgImage: 'https://wallpaperaccess.com/full/7959352.jpg',
+    ageRating: '17+',
+    isSeries: true,
+    objectPosition: 'center 30%',
+  },
   {
     id: 4,
     title: 'Avengers: Endgame',
     description: 'Setelah peristiwa dahsyat Infinity War, Avengers yang tersisa berkumpul untuk membalikkan tindakan Thanos dan memulihkan keseimbangan di alam semesta.',
-    bgImage: 'https://image.tmdb.org/t/p/original/or06FN3Dka5tukK1e9sl16pB3iy.jpg',
+    bgImage: 'https://wallpapersok.com/images/hd/avengers-endgame-1920-x-1080-i2bhq95r0dwjkujh.jpg',
     ageRating: '13+',
     isSeries: false,
+    objectPosition: 'center 30%',
   },
   {
     id: 5,
     title: 'Squid Game',
     description: 'Ratusan pemain yang terlilit hutang menerima undangan misterius untuk bermain game anak-anak. Hadiahnya menggiurkan, tapi taruhannya adalah nyawa mereka sendiri.',
-    bgImage: 'https://image.tmdb.org/t/p/original/dDlEmu3EZ0Pgg93K2SVNLCjCSvE.jpg',
+    bgImage: 'https://wallpapers.com/images/featured/squid-game-fvsfw2qlkey7u5o8.jpg',
     ageRating: '17+',
     isSeries: true,
+    objectPosition: 'center 30%',
   },
   {
     id: 6,
     title: 'John Wick: Chapter 4',
     description: 'John Wick mencari cara untuk mengalahkan High Table. Sebelum bisa mendapatkan kebebasan, ia harus menghadapi musuh baru dengan aliansi kuat di seluruh dunia.',
-    bgImage: 'https://image.tmdb.org/t/p/original/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg',
+    bgImage: 'https://images8.alphacoders.com/130/1304791.jpg',
     ageRating: '17+',
     isSeries: false,
+    objectPosition: 'center 30%',
   },
 ]
 
@@ -61,6 +67,7 @@ function Hero({ filterType = 'all' }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
   const [isMuted, setIsMuted] = useState(true)
+  const [imageErrors, setImageErrors] = useState({})
 
   useEffect(() => {
     setCurrentIndex(0)
@@ -85,9 +92,17 @@ function Hero({ filterType = 'all' }) {
     setCurrentIndex((prev) => (prev - 1 + filteredBanners.length) % filteredBanners.length)
   }
 
+  function handleImageError(bannerId) {
+    console.warn(`Gambar banner ${bannerId} gagal dimuat`)
+    setImageErrors((prev) => ({ ...prev, [bannerId]: true }))
+  }
+
   if (filteredBanners.length === 0) return null
 
   const currentBanner = filteredBanners[currentIndex]
+
+  // Fallback gradient kalau image error
+  const fallbackGradient = 'linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #2563eb 100%)'
 
   return (
     <section
@@ -95,8 +110,8 @@ function Hero({ filterType = 'all' }) {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Container - LANDSCAPE ratio untuk semua device (seperti Netflix mobile) */}
-      <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] md:aspect-[16/8] lg:aspect-[16/7] xl:aspect-[21/9]">
+      {/* Container - landscape ratio */}
+      <div className="relative w-full aspect-[16/10] sm:aspect-[16/8] md:aspect-[16/7] lg:aspect-[21/9]">
 
         {/* Background slides */}
         {filteredBanners.map((banner, idx) => (
@@ -105,27 +120,31 @@ function Hero({ filterType = 'all' }) {
             className={`absolute inset-0 transition-opacity duration-1000 ${
               idx === currentIndex ? 'opacity-100' : 'opacity-0'
             }`}
+            style={imageErrors[banner.id] ? { background: fallbackGradient } : {}}
           >
-            {/* GAMBAR - object-cover memastikan full frame terisi */}
-            <img
-              src={banner.bgImage}
-              alt={banner.title}
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ objectPosition: 'center 20%' }}
-            />
+            {!imageErrors[banner.id] && (
+              <img
+                src={banner.bgImage}
+                alt={banner.title}
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ objectPosition: banner.objectPosition || 'center center' }}
+                onError={() => handleImageError(banner.id)}
+                loading={idx === currentIndex ? 'eager' : 'lazy'}
+              />
+            )}
 
-            {/* Gradient overlay - kuat di bawah, transparan di atas */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent" />
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-transparent to-transparent" />
           </div>
         ))}
 
-        {/* Tombol navigasi kiri-kanan */}
+        {/* Tombol navigasi */}
         {filteredBanners.length > 1 && (
           <>
             <button
               onClick={prevBanner}
-              className="absolute left-2 sm:left-3 md:left-5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-md text-white flex items-center justify-center opacity-0 sm:opacity-0 sm:group-hover:opacity-100 transition-all active:scale-95 shadow-lg ring-1 ring-white/10"
+              className="absolute left-2 sm:left-3 md:left-5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-md text-white flex items-center justify-center opacity-0 sm:group-hover:opacity-100 transition-all active:scale-95 shadow-lg ring-1 ring-white/10"
               aria-label="Banner sebelumnya"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -135,7 +154,7 @@ function Hero({ filterType = 'all' }) {
 
             <button
               onClick={nextBanner}
-              className="absolute right-2 sm:right-3 md:right-5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-md text-white flex items-center justify-center opacity-0 sm:opacity-0 sm:group-hover:opacity-100 transition-all active:scale-95 shadow-lg ring-1 ring-white/10"
+              className="absolute right-2 sm:right-3 md:right-5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-md text-white flex items-center justify-center opacity-0 sm:group-hover:opacity-100 transition-all active:scale-95 shadow-lg ring-1 ring-white/10"
               aria-label="Banner berikutnya"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -147,8 +166,6 @@ function Hero({ filterType = 'all' }) {
 
         {/* KONTEN */}
         <div className="absolute inset-0 flex flex-col justify-end px-4 sm:px-6 md:pl-16 md:pr-6 lg:pl-20 pb-4 sm:pb-6 md:pb-8 lg:pb-10">
-
-          {/* Group 1: Judul + Deskripsi */}
           <div className="max-w-full sm:max-w-xl md:max-w-2xl mb-3 sm:mb-4 md:mb-6 animate-fade-up">
             <h1
               key={`title-${currentIndex}`}
@@ -165,7 +182,6 @@ function Hero({ filterType = 'all' }) {
             </p>
           </div>
 
-          {/* Group 2: Tombol - Selalu Horizontal, tidak wrap di mobile */}
           <div
             key={`btns-${currentIndex}`}
             className="flex items-center gap-1.5 sm:gap-3 animate-fade-in"
@@ -187,7 +203,7 @@ function Hero({ filterType = 'all' }) {
               {currentBanner.ageRating}
             </span>
 
-            {/* Tombol Mute - Pindah ke sini di mobile (sejajar dengan tombol lain) */}
+            {/* Mute mobile */}
             <button
               onClick={() => setIsMuted(!isMuted)}
               className="sm:hidden ml-auto w-7 h-7 rounded-full border-2 border-white/40 hover:border-white/70 bg-black/30 hover:bg-black/50 backdrop-blur-md text-white flex items-center justify-center active:scale-95 transition-all shrink-0"
@@ -208,7 +224,7 @@ function Hero({ filterType = 'all' }) {
           </div>
         </div>
 
-        {/* Tombol Mute - Untuk Tablet & Desktop (di pojok kanan bawah) */}
+        {/* Mute Tablet/Desktop */}
         <button
           onClick={() => setIsMuted(!isMuted)}
           className="hidden sm:flex absolute bottom-6 md:bottom-8 lg:bottom-10 right-6 md:right-10 z-20 w-10 h-10 md:w-11 md:h-11 rounded-full border-2 border-white/40 hover:border-white/70 bg-black/30 hover:bg-black/50 backdrop-blur-md text-white items-center justify-center active:scale-95 transition-all"
